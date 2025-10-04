@@ -26,6 +26,50 @@ void task_2(void){
         }
 }
 
+//Randomly chose to allocate 120 objects or deallocate a random object
+void task_3(void){
+        char *obj[ALLOCATES] = {0};
+        int total_allocated = 0; //Count total allocated object
+        int total_freed = 0; //Count total freed object (for debug purpose)
+
+        while(total_allocated < ALLOCATES){
+                int choice = rand() % 2;
+
+                //Allocate object
+                if(choice == 0){
+                        for(int i = 0; i < ALLOCATES, i++){
+                                //Check if object has not been allocated
+                                if(!obj[i]){
+                                        obj[i] = malloc(1);
+                                        total_allocated++;
+                                        break;
+                                }
+                        }
+                }
+
+                else{
+                        //Free random object (if any)
+                        int index = rand() % ALLOCATES;
+
+                        //Check if object has been allocated
+                        if(obj[index]){
+                                free(obj[index]);
+                                obj[index] = NULL;
+                                total_freed++;
+                                break;
+                        }
+                }
+        }
+
+        //Deallocate all remaining objects
+        for(int i = 0; i < ALLOCATES; i++){
+                if(obj[i]){
+                        free(obj[i]);
+                        total_freed++;
+                }
+        }
+}
+
 //Average runtime for each workload after execute 50 times
 double run_time(void (*func)(void)){
         struct timeval start, end;
