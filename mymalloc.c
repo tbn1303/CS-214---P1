@@ -62,7 +62,7 @@ static void initialize_heap(){
 static void coalesce_chunk(){
 	chunk *curr = free_chunk;
 	while((char *)curr < heap.bytes + MEMLENGTH){
-		chunk *next = (chunk *)((char *)curr + sizeof(chunk) + curr->size) //Temporary pointer to next chunk
+		chunk *next = (chunk *)((char *)curr + sizeof(chunk) + curr->size); //Temporary pointer to next chunk
 
 		//If next goes beyond heap, stop merging
 		if((char *)next >= heap.bytes + MEMLENGTH) break;
@@ -101,7 +101,7 @@ void *mymalloc(size_t size, char *file, int line){
 			alloc_chunk->inuse = 1;
 		}
 
-		return (char *)remainder_chunk + sizeof(chunk); // return pointer to user data
+		return (char *)alloc_chunk + sizeof(chunk); // return pointer to user data
 	}
 	
 	fprintf(stderr, "mymalloc: cannot allocate %zu bytes (%s:%d)\n", size, file, line);
