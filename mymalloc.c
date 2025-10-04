@@ -5,7 +5,7 @@
 
 #define MEMLENGTH 4096
 #define ALIGN8(x) (((x) + 7) & ~7)
-#define MIN_CHUNK 16
+#define MIN_CHUNK 8
 
 //Static heap with 8-byte alignment
 static union{
