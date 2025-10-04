@@ -91,10 +91,10 @@ void *mymalloc(size_t size, char *file, int line){
 	coalesce_chunk();
 
 	while((char *)alloc_chunk < heap.bytes + MEMLENGTH){
-		if(!alloc_chunk->inuse && size <= alloc_chunk->size){
+		if(!alloc_chunk->inuse && size <= (size_t)alloc_chunk->size){
 			
 			// Split heap if leftover space is enough for a new chunk
-			if(alloc_chunk->size >= sizeof(chunk) + MIN_CHUNK + size){
+			if((size_t)alloc_chunk->size >= sizeof(chunk) + MIN_CHUNK + size){
 				chunk *remainder_chunk = (chunk *)((char *)alloc_chunk + sizeof(chunk) + size);
 				remainder_chunk->size = alloc_chunk->size - sizeof(chunk) - size;
 				remainder_chunk->inuse = 0;				
