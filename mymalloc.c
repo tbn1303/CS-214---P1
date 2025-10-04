@@ -92,14 +92,16 @@ void *mymalloc(size_t size, char *file, int line){
 
 	while((char *)alloc_chunk < heap.bytes + MEMLENGTH){
 		if(!alloc_chunk->inuse && size <= alloc_chunk->size){
+			size_t leftover = alloc_chunk->size - size;
+
 			// Split heap if leftover space is enough for a new chunk
-			if(alloc_chunk->size >= sizeof(chunk) + MIN_CHUNK + size){
+			if(leftover >= sizeof(chunk) + MIN_CHUNK + size){
 				chunk *remainder_chunk = (chunk *)((char *)alloc_chunk + sizeof(chunk) + size);
 				remainder_chunk->size = alloc_chunk->size - sizeof(chunk) - size;
 				remainder_chunk->inuse = 0;				
 				alloc_chunk->size = size;
 			}
-			
+
 			alloc_chunk->inuse = 1;
 			return (char *)alloc_chunk + sizeof(chunk); // return pointer to user data
 		}
