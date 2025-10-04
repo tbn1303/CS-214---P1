@@ -37,7 +37,7 @@ void task_3(void){
 
                 //Allocate object
                 if(choice == 0){
-                        for(int i = 0; i < ALLOCATES, i++){
+                        for(int i = 0; i < ALLOCATES; i++){
                                 //Check if object has not been allocated
                                 if(!obj[i]){
                                         obj[i] = malloc(1);
