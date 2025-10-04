@@ -7,7 +7,7 @@
 #define ALLOCATES 120
 
 //Allocate and deallocate immediately 1-byte object, 120 times
-void task_A(){
+void task_A(void){
         for(int i = 0; i < ALLOCATES; i++){
                 char *p = malloc(1);
                 free(p);
@@ -15,7 +15,7 @@ void task_A(){
 }
 
 //Allocate of 120 1-byte objects, then deallocate them
-void task_B(){
+void task_B(void){
         char *obj[ALLOCATES];
         for(int i = 0; i < ALLOCATES; i++){
                 obj[i] = malloc(1);
@@ -27,7 +27,7 @@ void task_B(){
 }
 
 //Average runtime for each workload after execute 50 times
-double run_time(void (*func())){
+double run_time(void (*func)(void)){
         struct timeval start, end;
         double total_time = 0.0;
 
