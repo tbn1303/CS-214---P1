@@ -5,6 +5,7 @@
 
 #define MEMLENGTH 4096
 #define ALIGN8(x) (((x) + 7) & ~7)
+#define MIN_CHUNK 16
 
 //Static heap with 8-byte alignment
 static union{
@@ -59,7 +60,7 @@ static void initialize_heap(){
 
 // Coalesce free chunks
 static void coalesce_chunk(){
-	chunk *curr = free_chunk;
+	chunk *curr = (chunk *)heap.bytes;
 	while((char *)curr < heap.bytes + MEMLENGTH){
 		chunk *next = (chunk *)((char *)curr + sizeof(chunk) + curr->size); //Temporary pointer to next chunk
 
@@ -91,18 +92,12 @@ void *mymalloc(size_t size, char *file, int line){
 
 	while((char *)alloc_chunk < heap.bytes + MEMLENGTH){
 		if(!alloc_chunk->inuse && size <= alloc_chunk->size){
-			size_t leftover = alloc_chunk->size - size;
-
 			// Split heap if leftover space is enough for a new chunk
-			if(leftover >= sizeof(chunk) + 8){
+			if(alloc_chunk->size >= sizeof(chunk) + MIN_CHUNK + size){
 				chunk *remainder_chunk = (chunk *)((char *)alloc_chunk + sizeof(chunk) + size);
-				remainder_chunk->size = leftover - sizeof(chunk);
+				remainder_chunk->size = alloc_chunk->size - sizeof(chunk) - size;
 				remainder_chunk->inuse = 0;				
 				alloc_chunk->size = size;
-			}
-
-			else{
-				size = alloc_chunk->size;
 			}
 			
 			alloc_chunk->inuse = 1;
