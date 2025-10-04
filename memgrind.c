@@ -7,7 +7,7 @@
 #define ALLOCATES 120
 
 //Allocate and deallocate immediately 1-byte object, 120 times
-void task_A(void){
+void task_1(void){
         for(int i = 0; i < ALLOCATES; i++){
                 char *p = malloc(1);
                 free(p);
@@ -15,7 +15,7 @@ void task_A(void){
 }
 
 //Allocate of 120 1-byte objects, then deallocate them
-void task_B(void){
+void task_2(void){
         char *obj[ALLOCATES];
         for(int i = 0; i < ALLOCATES; i++){
                 obj[i] = malloc(1);
@@ -48,8 +48,8 @@ double run_time(void (*func)(void)){
 int main(int argc, char **argv){
         srand(time(NULL));
 
-        printf("Task A avg time: %.6f secs\n", run_time(task_A));
-        printf("Task B avg time: %.6f secs\n", run_time(task_B));
+        printf("Task A avg time: %.6f secs\n", run_time(task_1));
+        printf("Task B avg time: %.6f secs\n", run_time(task_2));
 
         return EXIT_SUCCESS;
 }
