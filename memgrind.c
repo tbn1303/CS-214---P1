@@ -48,8 +48,8 @@ double run_time(void (*func())){
 int main(int argc, char **argv){
         srand(time(NULL));
 
-        printf("Task A avg time: %.6f secs\n", run_time(Task_A));
-        printf("Task B avg time: %.6f secs\n", run_time(Task_B));
+        printf("Task A avg time: %.6f secs\n", run_time(task_A));
+        printf("Task B avg time: %.6f secs\n", run_time(task_B));
 
         return EXIT_SUCCESS;
 }
