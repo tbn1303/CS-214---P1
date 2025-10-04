@@ -3,7 +3,7 @@
 #include <sys/time.h>
 #include "mymalloc.h"
 
-#define RUN 50
+#define RUNS 50
 #define ALLOCATES 120
 
 //Allocate and deallocate immediately 1-byte object, 120 times
