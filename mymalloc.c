@@ -5,7 +5,6 @@
 
 #define MEMLENGTH 4096
 #define ALIGN8(x) (((x) + 7) & ~7)
-#define MIN_CHUNK 8
 
 //Static heap with 8-byte alignment
 static union{
@@ -84,24 +83,33 @@ void *mymalloc(size_t size, char *file, int line){
 	//Initialize heap
 	if(!heap_initialized)
 		initialize_heap();
-       	
+
 	size = ALIGN8(size); //Round size to multiple of 8
-	chunk *alloc_chunk = free_chunk;
+	chunk *alloc_chunk = (chunk *)heap.bytes;
+
+	coalesce_chunk();
 
 	while((char *)alloc_chunk < heap.bytes + MEMLENGTH){
 		if(!alloc_chunk->inuse && size <= alloc_chunk->size){
+			size_t leftover = alloc_chunk->size - size;
+
 			// Split heap if leftover space is enough for a new chunk
-			if((size + sizeof(chunk) + MIN_CHUNK) <= alloc_chunk->size){
+			if(leftover >= sizeof(chunk) + 8){
 				chunk *remainder_chunk = (chunk *)((char *)alloc_chunk + sizeof(chunk) + size);
-				remainder_chunk->size = alloc_chunk->size - size - sizeof(chunk);
+				remainder_chunk->size = leftover - sizeof(chunk);
 				remainder_chunk->inuse = 0;				
 				alloc_chunk->size = size;
 			}
+
+			else{
+				size = alloc_chunk->size;
+			}
 			
 			alloc_chunk->inuse = 1;
+			return (char *)alloc_chunk + sizeof(chunk); // return pointer to user data
 		}
 
-		return (char *)alloc_chunk + sizeof(chunk); // return pointer to user data
+		alloc_chunk = (chunk *)((char *)alloc_chunk + sizeof(chunk) + alloc_chunk->size);
 	}
 	
 	fprintf(stderr, "mymalloc: cannot allocate %zu bytes (%s:%d)\n", size, file, line);
