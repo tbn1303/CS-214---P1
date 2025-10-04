@@ -103,6 +103,7 @@ void *mymalloc(size_t size, char *file, int line){
 			return (char *)curr + sizeof(chunk); // return pointer to user data
 		}
 
+		//Point to next available chunk
 		curr = (chunk *)((char *)curr + sizeof(chunk) + curr->size);
 	}
 	
