@@ -11,6 +11,7 @@ void task_A(){
         for(int i = 0; i < ALLOCATES; i++){
                 char *p = malloc(1);
                 free(p);
+        }
 }
 
 //Allocate of 120 1-byte objects, then deallocate them
