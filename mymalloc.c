@@ -86,24 +86,24 @@ void *mymalloc(size_t size, char *file, int line){
 		initialize_heap();
 
 	size = ALIGN8(size); //Round size to multiple of 8
-	chunk *alloc_chunk = (chunk *)heap.bytes;
+	chunk *curr = (chunk *)heap.bytes;
 
-	while((char *)alloc_chunk < heap.bytes + MEMLENGTH){
-		if(!alloc_chunk->inuse && size <= (size_t)alloc_chunk->size){
+	while((char *)curr < heap.bytes + MEMLENGTH){
+		if(!curr->inuse && size <= (size_t)curr->size){
 			
 			// Split heap if leftover space is enough for a new chunk
-			if((size_t)alloc_chunk->size - size >= sizeof(chunk) + MIN_CHUNK){
-				chunk *remainder_chunk = (chunk *)((char *)alloc_chunk + sizeof(chunk) + size);
-				remainder_chunk->size = alloc_chunk->size - sizeof(chunk) - size;
-				remainder_chunk->inuse = 0;				
-				alloc_chunk->size = size;
+			if((size_t)curr->size - size >= sizeof(chunk) + MIN_CHUNK){
+				chunk *remainder = (chunk *)((char *)curr + sizeof(chunk) + size);
+				remainder->size = curr->size - sizeof(chunk) - size;
+				remainder->inuse = 0;				
+				curr->size = size;
 			}
 
-			alloc_chunk->inuse = 1;
-			return (char *)alloc_chunk + sizeof(chunk); // return pointer to user data
+			curr->inuse = 1;
+			return (char *)curr + sizeof(chunk); // return pointer to user data
 		}
 
-		alloc_chunk = (chunk *)((char *)alloc_chunk + sizeof(chunk) + alloc_chunk->size);
+		curr = (chunk *)((char *)curr + sizeof(chunk) + curr->size);
 	}
 	
 	fprintf(stderr, "mymalloc: cannot allocate %zu bytes (%s:%d)\n", size, file, line);
