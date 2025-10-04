@@ -27,7 +27,7 @@ void task_B(){
 }
 
 //Average runtime for each workload after execute 50 times
-double run_time(void *(func())){
+double run_time(void (*func())){
         struct timeval start, end;
         double total_time = 0.0;
 
