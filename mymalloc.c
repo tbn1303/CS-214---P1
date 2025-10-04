@@ -88,8 +88,6 @@ void *mymalloc(size_t size, char *file, int line){
 	size = ALIGN8(size); //Round size to multiple of 8
 	chunk *alloc_chunk = (chunk *)heap.bytes;
 
-	coalesce_chunk();
-
 	while((char *)alloc_chunk < heap.bytes + MEMLENGTH){
 		if(!alloc_chunk->inuse && size <= (size_t)alloc_chunk->size){
 			
