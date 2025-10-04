@@ -15,7 +15,7 @@ static union{
 
 // Chunk metadata
 typedef struct chunk{
-	size_t size; //Payload size
+	int size;
 	int inuse; //1 = allocated, 0 = free
 } chunk;
 
