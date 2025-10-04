@@ -37,7 +37,7 @@ double run_time(void (*func())){
                 gettimeofday(&end, NULL);
 
                 long seconds = end.tv_sec - start.tv_sec;
-                long microseconds = end.tv_usec - start.tv_sec;
+                long microseconds = end.tv_usec - start.tv_usec;
 
                 total_time += seconds + microseconds * 1e-6;
         }
