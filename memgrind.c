@@ -25,4 +25,18 @@ void task_B(){
         }
 }
 
-//
+//Average runtime for each workload after execute 50 times
+double run_time(void *(func())){
+        struct timeval start, end;
+        long total_time = 0;
+
+        for(int i = 0; i < RUNS; i++){
+                gettimeofday(&start, NULL);
+                func();
+                gettimeofday(&end, NULL);
+
+                total_time += (end.tv_sec - start.tv_sec) * 1000000L + (end.tv_usec - start.tv_usec);
+        }
+
+        return (double)total_time / RUNS;
+}
