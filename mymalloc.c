@@ -58,25 +58,30 @@ static void initialize_heap(){
 	heap_initialized = 1;
 }
 
-// Coalesce free chunks
+// Coalesce free chunks forward and backward
 static void coalesce_chunk(){
-	chunk *curr = (chunk *)heap.bytes;
-	while((char *)curr < heap.bytes + MEMLENGTH){
-		chunk *next = (chunk *)((char *)curr + sizeof(chunk) + curr->size); //Temporary pointer to next chunk
+        chunk *curr = (chunk *)heap.bytes;
+        chunk *prev = NULL;
 
-		//If next goes beyond heap, stop merging
-		if((char *)next >= heap.bytes + MEMLENGTH) break;
+        while((char *)curr < heap.bytes + MEMLENGTH){
+                //Merge previous and curr chunk if free
+                if(prev && !prev->inuse && !curr->inuse){
+                        prev->size += sizeof(chunk) + curr->size;
+                        curr = prev;
+                }
 
-		//Merge curr and next chunk if free
-		if(!curr->inuse && !next->inuse){
-			curr->size += sizeof(chunk) + next->size;
-		}
+                chunk *next = (chunk *)((char *)curr + sizeof(chunk) + curr->size); //Temporary pointer to next chunk
 
-		//Move to next chunk
-		else{
-			curr = next;
-		}
-	}
+                //Merge next and curr chunk if free
+                while((char *)next < heap.bytes + MEMLENGTH && !next->inuse){
+                        curr->size += sizeof(chunk) + next->size;
+                        next = (chunk *)((char *)curr + sizeof(chunk) + curr->size);
+                }
+
+                //Move to next chunk
+                prev = curr;
+                curr = (chunk *)((char *)curr + sizeof(chunk) + curr->size);
+        }
 }
 
 // Memory allocation
