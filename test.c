@@ -42,17 +42,16 @@ void correctness_testing(){
 		free(c);
 	}
 
-	//Free all object and check for double free
+	//Free all remaining object and check for double free
 	for(int i = 0; i < 12; i++){
 		if(obj[i]){
 			free(obj[i]);
-			obj[i] = NULL;
 		}
 	}
 
 	//Double free
-	free(obj[0]);
-	free(obj[1]);
+	free(obj[3]);
+	free(obj[4]);
 
 	printf("Correctness testing is completed!\n");
 }
