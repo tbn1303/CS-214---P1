@@ -1,6 +1,9 @@
 NAME: Thai Bao Nguyen
 RUID: 249008650
 
+NAME: Tommy Pham
+RUID: 225005291
+
 Design:
 ---
 mymalloc.c
