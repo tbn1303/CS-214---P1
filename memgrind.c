@@ -70,7 +70,7 @@ void task_3(void){
         }
 }
 
-//Fill the heap, deallocate random half object
+//Fill the heap, deallocate randomly half objects
 void task_4(void){
         char *obj[64];
 
