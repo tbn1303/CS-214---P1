@@ -70,6 +70,36 @@ void task_3(void){
         }
 }
 
+//Fill the heap, deallocate random half object
+void task_4(void){
+        char *obj[64];
+
+        //Fill the heap
+        for(int i = 0; i < 64; i++){
+                obj[i] = malloc(56);
+        }
+
+        //Deallocate random half object 
+        int total_freed = 0;
+        while(total_freed < 32){
+                int index = rand() % 64;
+
+                if(obj[index]){
+                        free(obj[index]);
+                        obj[index] = NULL;
+                        total_freed++;
+                }
+        }
+
+        //Deallocate remaining objects
+        for(int i = 0; i < 64; i++){
+                if(obj[i]){
+                        free(obj[i]);
+                        obj[i] = NULL;
+                }
+        }
+}
+
 //Average runtime for each workload after execute 50 times
 double run_time(void (*func)(void)){
         struct timeval start, end;
