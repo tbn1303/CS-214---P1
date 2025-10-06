@@ -156,9 +156,9 @@ void task_5(void){
 }
 
 int main(int argc, char **argv){
-        srand(time(NULL));
+    srand(time(NULL));
 
-        printf("Task 1 avg time: %.6f secs\n", run_time(task_1));
+    printf("Task 1 avg time: %.6f secs\n", run_time(task_1));
 	printf("Task 2 avg time: %.6f secs\n", run_time(task_2));
 	printf("Task 3 avg time: %.6f secs\n", run_time(task_3));
 	printf("Task 4 avg time: %.6f secs\n", run_time(task_4));
