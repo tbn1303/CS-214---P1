@@ -1,47 +1,45 @@
-NAME: Thai Bao Nguyen
-RUID: 249008650
+NAME: Thai Bao Nguyen  
+RUID: 249008650  
 
-NAME: Tommy Pham
-RUID: 225005291
+NAME: Tommy Pham  
+RUID: 225005291  
 
 Design:
 ---
 mymalloc.c
-	
-	Each chunk has a header of 8-byte containing size and inuse to check if chunk has been allocated or freed.
-	
-	Anytime we initialize heap, we clean up the heap and check for leak atexit().
 
-	In my coalesce_chunk(), I include a pointer from my free as our current chunk. Then I traverse the chunk base on this pointer forward and backward to
-		check for any free chunk and coalesce them.
+Each chunk has an 8-byte header containing its size and an “inuse” flag to check if the chunk has been allocated or freed.  
 
-	In mymalloc(), I initialize heap and split the heap whenever I allocate a chunk. 
-		Also, I place a message if the program cannot allocate the requested bytes from user.
+Whenever we initialize the heap, we clean it up and register a leak check using atexit().  
 
-	In myfree(), I have two error handling: one for invalid pointer and one for double free.
-		If the program pass the check, I will mark chunk inuse and coalesce chunks (if any).
+In coalesce_chunk(), we use a pointer from myfree() as the current chunk. Then we traverse the chunks forward and backward based on this pointer to check for any free chunks and coalesce them.  
+
+In mymalloc(), we initialize the heap and split it whenever we allocate a chunk. We also print an error message if the program cannot allocate the requested number of bytes.  
+
+In myfree(), we have two types of error handling: one for invalid pointers and one for double frees. If the program passes the checks, we mark the chunk as not in use and coalesce adjacent free chunks (if any).
 
 Test plan:
 ---
-	First, I allocate 12 objects into heap and fill each of them with distinct pattern (e.g. i * 2, even number).
-	Then, I check for overlapping. If they overlap, their value will not consistent in each object (e.g. obj[0] will have different value in each byte).
-	Next, I check for coalesce chunk in my program. As observe, there were no error message print out, meaning that my program has coalesced chunks succesfully.
-	Finally, before checking for double free error, I freed all object in heap and call another free in freed object. We have an error printed out meaning that
-		my error handling was successed.
+First, we allocate 12 objects in the heap and fill each of them with a distinct pattern (for example, i * 2 or even numbers).  
+Then, we check for overlapping. If they overlap, their values will not be consistent across objects (for example, obj[0] will have different values in each byte).  
+Next, we check for chunk coalescing in our program. As observed, there were no error messages printed out, meaning that our program successfully coalesced the chunks.  
+Finally, before checking for double free errors, we freed all objects in the heap and called free again on a freed object. An error message was printed, meaning that our error handling worked correctly.
 
 Stress testing:
 ---
-	There are two optional tasks that I make:
-		The first one is I fill the heap with 64 object each with 56-byte + 8-byte header. Then I deallocate half of the object.
-		The second one is I fill the heap again. Then I deallocate the first 10 objects and allocate that 10 object again but with smaller size.
-	I free all object after each task.
+There are two optional tasks that we created:  
 
-	After 50 tries, the results are:
-		Task 1 avg time: 0.000004 secs
-		Task 2 avg time: 0.000043 secs
-		Task 3 avg time: 0.000005 secs
-		Task 4 avg time: 0.000020 secs
-		Task 5 avg time: 0.000014 secs
-	The first task and the third one is the fastest one while the second task is the slowest one.
-		Therefore, allocate and deallocate immediately and object is efficient and faster than allocate all object and free them later.
-	Last but not least, randomly choosing between allocate or deallocate is also fast but quite complicated. However, it is as fast and efficient as the first task.
+The first one fills the heap with 64 objects, each with 56 bytes of data plus an 8-byte header. Then we deallocate half of the objects.  
+The second one fills the heap again, deallocates the first 10 objects, and reallocates those 10 objects but with smaller sizes.  
+We free all objects after each task.  
+
+After 50 trials, the results were:  
+	Task 1 average time: 0.000004 seconds  
+	Task 2 average time: 0.000043 seconds  
+	Task 3 average time: 0.000005 seconds  
+	Task 4 average time: 0.000020 seconds  
+	Task 5 average time: 0.000014 seconds  
+
+The first and third tasks were the fastest, while the second task was the slowest.  
+Therefore, allocating and immediately deallocating an object is more efficient and faster than allocating all objects and freeing them later.  
+Lastly, randomly choosing between allocation and deallocation is also fast but slightly more complex. However, it is still about as efficient as the first task.
