@@ -58,32 +58,32 @@ static void initialize_heap(){
 	heap_initialized = 1;
 }
 
-// Coalesce free chunks forward and backward
-static void coalesce_chunk(){
-        chunk *curr = (chunk *)heap.bytes;
-        chunk *prev = NULL;
+// Coalesce free chunks 
+static void coalesce_chunk(chunk *curr){
+	if(!curr) return;
 
-        while((char *)curr < heap.bytes + MEMLENGTH){
-                //Merge previous and curr chunk if free
-                if(prev && !prev->inuse && !curr->inuse){
-                        prev->size += sizeof(chunk) + curr->size;
-                        curr = prev;
-                }
+	chunk *next = (chunk *)((char *)curr + sizeof(chunk) + curr->size); //Temporary pointer to next chunk
 
-                chunk *next = (chunk *)((char *)curr + sizeof(chunk) + curr->size); //Temporary pointer to next chunk
+	//Merge next and curr chunk if free
+	while((char *)next < heap.bytes + MEMLENGTH && !next->inuse){
+		curr->size += sizeof(chunk) + next->size;
+               	next = (chunk *)((char *)curr + sizeof(chunk) + curr->size);
+	}
 
-                //Merge next and curr chunk if free
-                while((char *)next < heap.bytes + MEMLENGTH && !next->inuse){
-                        curr->size += sizeof(chunk) + next->size;
-                        next = (chunk *)((char *)curr + sizeof(chunk) + curr->size);
-                }
+	//Merge curr and previous chunk if free
+	chunk *prev = (chunk *)heap.bytes;
+	while((char *)prev < (char*)curr){
+		chunk *prev_next = (chunk*)((char*)prev + sizeof(chunk) + prev->size);
 
-                //Move to next chunk
-                prev = curr;
-                curr = (chunk *)((char *)curr + sizeof(chunk) + curr->size);
-        }
+		if(prev_next == curr && !prev->inuse){
+			prev->size += sizeof(chunk) + curr->size;
+			curr = prev;
+			break;
+		}
+
+		prev = prev_next;
+	}
 }
-
 // Memory allocation
 void *mymalloc(size_t size, char *file, int line){
 	//Initialize heap
@@ -125,7 +125,7 @@ void myfree(void *ptr, char* file, int line){
 	//Check if pointer belongs to heap
 	if((char *)ptr < heap.bytes || (char *)ptr >= heap.bytes + MEMLENGTH){
 		fprintf(stderr, "free: invalid pointer (%s:%d)\n", file, line);
-		exit(2);
+		return;
        	}
 	
 	//Get pointer to metadata
@@ -133,9 +133,9 @@ void myfree(void *ptr, char* file, int line){
 	
 	if(!c->inuse){
 		fprintf(stderr, "free: double free (%s:%d)\n", file, line);
-		exit(2);
+		return;
 	}
 	
 	c->inuse = 0;
-	coalesce_chunk();
+	coalesce_chunk(c);
 }
